@@ -41,16 +41,6 @@ Bu proje; **UDT yapısı** ile çalışan, **kaynak değeri** (INT/DINT/REAL ola
 
 
 
-## Mimari
-
-```mermaid
-flowchart LR
-  A[Analog/Raw (INT/DINT/REAL)] --> B[FB_ScaleLogger]
-  B --> C[Log Control DB.LogData.Settings]
-  B --> D[Log Control DB.Value & Text]
-  B --> E[Log Control DB.Prescription[1..100]]
-  E --> F[WinCC Table/Trend]
-```
 
 > Görsellerdeki yapıya uyumlu: **Log Control DB** altında `LogData.Settings` (InMin, InMax, OutMin, OutMax, Log Repeat time), **Warning Control\[1..10]** (Text/MinValue/MaxValue), anlık **Value/Text** ve **Prescription\[1..100]** (Tarih/Saat, Value, Text).
 
@@ -59,89 +49,32 @@ flowchart LR
 | Bileşen    |           Sürüm/Model | Not                |
 | ---------- | --------------------: | ------------------ |
 | PLC        |     S7‑1200 / S7‑1500 | OB1/OB35 destekli  |
-| TIA Portal |                  v17+ | SCL ile geliştirme |
-| HMI        | WinCC Unified/Comfort | Trend/tablolar     |
+| TIA Portal |                  v20  | SCL ile geliştirme |
 
 ## Gereksinimler
 
-* TIA Portal v17+ (önerilir)
-* SCL lisansı
+* TIA Portal v20+ (önerilir)
 * (İsteğe bağlı) OB35 periyodik kesmesi
+* S7‑1200 / S7‑1500
+* HMI Panel
 
 ## Kurulum
 
-1. UDT’yi ekleyin (örn. `UDT_ScaleLog`).
-2. FB’yi ekleyin (örn. `FB_ScaleLogger`).
-3. Her sinyal için hedef DB’de `UDT_ScaleLog` alanı oluşturun (örn. `DB_Process`.TankLevel).
+1. UDT’yi ekleyin (örn. `LogControlUDT`).
+2. FB’yi ekleyin (örn. `Log ControlFC`).
+3. Her sinyal için hedef DB’de `LogControlUDT` alanı oluşturun (örn. `TankLevel.LogControlUDT`).
 4. OB1/OB35 içinde FB’yi çağırıp **IN\_OUT**’a ilgili UDT alanını bağlayın.
 
-## Hızlı Başlangıç
 
-```text
-Project
-├─ Types
-│  └─ UDT_ScaleLog
-├─ Program blocks
-│  ├─ FB_ScaleLogger
-│  ├─ OB1 (veya OB35)
-│  └─ DB_ScaleLogger_<instance>
-└─ Data blocks
-   └─ DB_Process (içinde birden fazla UDT alanı)
-```
+Bu alan ne işe yarıyor?
+<img width="856" height="631" alt="Screenshot 2025-08-19 211743" src="https://github.com/user-attachments/assets/a3a96182-829f-41c9-bd76-2747f854ce75" />
 
-## DB / UDT Şeması (Projenizdeki Yapıya Göre)
+In Min / In Max: Giriş (raw) aralığı. Analog/REAL/INT değerin beklenen minimum–maksimum sınırları (ör. 0–27648 ya da 0–100).
 
-Aşağıdaki şema, paylaştığınız ekran görüntülerindeki alan adlarıyla birebir hizalanmıştır.
+Out Min / Out Max: Mühendislik birimi aralığı. Giriş aralığını buraya ölçekleyeceğiz (örn. 0–10 bar, 0–100 %).
 
-```pascal
-// === Settings ===
-TYPE UDT_Settings
-  STRUCT
-    InMin         : REAL;      // örn. 0.0
-    InMax         : REAL;      // örn. 100.0
-    OutMin        : REAL;      // örn. 0.0
-    OutMax        : REAL;      // örn. 100.0
-    LogRepeatTime : TIME := T#1S; // örnekleme periyodu (görselde T#15s)
-  END_STRUCT;
-END_TYPE
+Log Repeat time: Loglama örnekleme periyodu (görselde T#15s). Her tetikte 1 kayıt alınır.
 
-// === Warning Bandı (Value1..Value10) ===
-TYPE UDT_WarningBand
-  STRUCT
-    Text     : STRING[32]; // 'Value1', 'Value2' ...
-    MinValue : REAL;       // alt sınır
-    MaxValue : REAL;       // üst sınır
-  END_STRUCT;
-END_TYPE
-
-// === Tek log kaydı ===
-TYPE UDT_Record
-  STRUCT
-    TarihSaat : DTL;       // S7-1500 DTL (yerel saat önerilir)
-    Value     : REAL;      // ölçeklenmiş değer
-    Text      : STRING[32];// eşleşen band yazısı
-  END_STRUCT;
-END_TYPE
-
-// === Ana UDT ===
-TYPE UDT_ScaleLog
-  STRUCT
-    Settings        : UDT_Settings;                    // LogData.Settings
-    WarningControl  : ARRAY[1..10] OF UDT_WarningBand; // Value1..Value10
-
-    // Anlık durum (görsellerde üst bölüm)
-    Value           : REAL;                            // Current scaled value
-    Text            : STRING[32];                      // Current band text
-
-    // 100 adet kayıt (görsellerde Prescription[1..100])
-    Prescription    : ARRAY[1..100] OF UDT_Record;
-
-    // Performans için (kullanırsanız kaydırma yerine ring buffer)
-    Head            : INT := 1;     // bir sonraki yazım 1..100
-    Count           : INT := 0;     // 0..100
-  END_STRUCT;
-END_TYPE
-```
 
 > Notlar:
 >
