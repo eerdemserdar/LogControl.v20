@@ -65,8 +65,8 @@ Bu proje; **UDT yapısı** ile çalışan, **kaynak değeri** (INT/DINT/REAL ola
 3. Her sinyal için hedef DB’de `LogControlUDT` alanı oluşturun (örn. `TankLevel.LogControlUDT`).
 4. OB1/OB35 içinde FB’yi çağırıp **IN\_OUT**’a ilgili UDT alanını bağlayın.
 
+# Bu alan ne işe yarıyor?
 
-Bu alan ne işe yarıyor?
 <img width="856" height="631" alt="Screenshot 2025-08-19 211743" src="https://github.com/user-attachments/assets/a3a96182-829f-41c9-bd76-2747f854ce75" />
 
 In Min / In Max: Giriş (raw) aralığı. Analog/REAL/INT değerin beklenen minimum–maksimum sınırları (ör. 0–27648 ya da 0–100).
