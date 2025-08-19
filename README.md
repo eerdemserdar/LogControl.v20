@@ -24,15 +24,22 @@ Bu proje; **UDT yapısı** ile çalışan, **kaynak değeri** (INT/DINT/REAL ola
 ## Öne Çıkanlar
 
 * 🔧 **UDT merkezli tasarım**: Her sinyal için tek tip veri şeması; FB çağrısında yalnızca hedef UDT’yi bağlayın.
-* 📏 **Doğrusal ölçekleme**: `Out = OutMin + (In - InMin) * (OutMax - OutMin) / (InMax - InMin)`
 * 🧰 **Tip esnekliği**: Kaynak INT/DINT değerlerini REAL’e çevrilerek işleme imkânı.
 * 📚 **Ring buffer log (100 kayıt)**: Kayıtlar dairesel olarak tutulur; fazla olduğunda en eski üstüne yazar.
 * 🖥️ **HMI/SCADA dostu**: UDT içindeki buffer, trend/tabloda kolayca görselleştirilebilir.
-* ⚙️ **Hafif ve tekrarlanabilir**: Kayıt için kopyalama/shift yerine **mod tabanlı** indeksleme (performanslı).
 
 ## Ekran Görüntüleri / Demo
 
-<!-- İsteğe bağlı görseller ve kısa video/gif -->
+<img width="856" height="631" alt="Screenshot 2025-08-19 211743" src="https://github.com/user-attachments/assets/f84e938c-89a3-428f-ae1d-f132d0248e94" />
+
+<img width="837" height="610" alt="Screenshot 2025-08-19 212338" src="https://github.com/user-attachments/assets/a6cc27e6-1fbf-4873-a1a5-e717e8026897" />
+
+<img width="840" height="612" alt="Screenshot 2025-08-19 212428" src="https://github.com/user-attachments/assets/9855443f-4cc1-4f15-b15e-1733a13b0525" />
+
+<img width="967" height="727" alt="Screenshot 2025-08-19 212514" src="https://github.com/user-attachments/assets/cf024f77-c25b-4bdb-8a19-190349476d70" />
+
+
+
 
 ## Mimari
 
