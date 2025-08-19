@@ -1,382 +1,292 @@
-Skip to content
-Navigation Menu
-parallax
-jsPDF
+# Proje Adı
 
-Type / to search
-Code
-Issues
-115
-Pull requests
-5
-Actions
-Projects
-Security
-1
-Insights
-Owner avatar
-jsPDF
-Public
-parallax/jsPDF
-Go to file
-t
-Name		
-HackbrettXXX
-HackbrettXXX
-3.0.1
-57cbe94
- · 
-5 months ago
-.github
-don't use saucelabs in CI to be able to correctly run CI for PRs
-5 months ago
-dist
-3.0.1
-5 months ago
-docs
-3.0.1
-5 months ago
-examples
-fix(sec): remove MSIE support to allow upgrading to vuln-free `dompur…
-6 months ago
-fontconverter
-update font-converter - can now generate UMD and ES modules headers
-5 years ago
-src
-improve performance of data url parsing in addimage (#3843)
-5 months ago
-test
-improve performance of data url parsing in addimage (#3843)
-5 months ago
-types
-Implement getLineWidth function (#3324)
-4 years ago
-.babelrc.esm.json
-transpile sources in build step (#3214)
-4 years ago
-.babelrc.json
-transpile sources in build step (#3214)
-4 years ago
-.codeclimate.yml
-Add codeclimate configs
-9 years ago
-.csslintrc
-Add codeclimate configs
-9 years ago
-.eslintignore
-Replace Deflater with pako (#2944)
-5 years ago
-.eslintrc.js
-Replace Deflater with pako (#2944)
-5 years ago
-.gitignore
-Resolve fonts using CSS Level 3 algorithm when using html() (#3040)
-5 years ago
-.gitpod.yml
-fix the Gitpod automated setup.
-5 years ago
-.lgtm.yml
-Update lgtm.yml file to exclude types (#2440)
-6 years ago
-.prettierignore
-Replace Deflater with pako (#2944)
-5 years ago
-.prettierrc
-Resolve fonts using CSS Level 3 algorithm when using html() (#3040)
-5 years ago
-CODE_OF_CONDUCT.md
-Replace Deflater with pako (#2944)
-5 years ago
-CONTRIBUTING.md
-fix(sec): remove MSIE support to allow upgrading to vuln-free `dompur…
-6 months ago
-HOTFIX_README.md
-improve hotfix documentation and mention px_scaling hotfix in jsPDF d…
-5 years ago
-ISSUE_TEMPLATE.md
-improve issue template (#3262)
-4 years ago
-LICENSE
-2.4.0
-4 years ago
-README.md
-3.0.1
-5 months ago
-RELEASE.md
-update bower.json to 2.0.0
-5 years ago
-SECURITY.md
-Create SECURITY.md (#3364)
-4 years ago
-bower.json
-3.0.1
-5 months ago
-builder.html
-Refactor cell.js (#2412)
-6 years ago
-cli.js
-Replace Deflater with pako (#2944)
-5 years ago
-deletedocs.js
-Replace Deflater with pako (#2944)
-5 years ago
-index.html
-2.4.0
-4 years ago
-jsdoc.json
-fix doc generation and let it run on npm version, as well
-5 years ago
-modules.conf.js
-Replace zlib.js and pako with fflate (#3054)
-5 years ago
-package-lock.json
-3.0.1
-5 months ago
-package.json
-3.0.1
-5 months ago
-rollup.config.js
-transpile sources in build step (#3214)
-4 years ago
-Repository files navigation
-README
-Code of conduct
-Contributing
-MIT license
-Security
-jsPDF
-Continous Integration Code Climate Test Coverage GitHub license Total alerts Language grade: JavaScript Gitpod ready-to-code
+<!-- Kısa, bir cümlelik özet: proje ne yapar ve kimin için? -->
 
-A library to generate PDFs in JavaScript.
+Açıklama: Bu proje, ...
 
-You can catch me on twitter: @MrRio or head over to my company's website for consultancy.
+<p align="center">
+  <!-- Varsa bir kapak görseli / logo ekleyin -->
+  <!-- <img src="docs/cover.png" alt="Proje Kapak" width="640" /> -->
+</p>
 
-jsPDF is now co-maintained by yWorks - the diagramming experts.
+<p align="center">
+  <!-- Arzu edilen rozet örnekleri -->
+  <!-- <a href="#"><img src="https://img.shields.io/badge/versiyon-1.0.0-informational" alt="Version"></a>
+  <a href="#"><img src="https://img.shields.io/badge/lisans-MIT-success" alt="License"></a>
+  <a href="#"><img src="https://img.shields.io/badge/CI-passing-brightgreen" alt="CI"></a> -->
+</p>
 
-Live Demo | Documentation
-Install
-Recommended: get jsPDF from npm:
+---
 
-npm install jspdf --save
-# or
-yarn add jspdf
-Alternatively, load it from a CDN:
+## İçindekiler
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
-Or always get latest version via unpkg
+* [Özellikler](#özellikler)
+* [Demo / Ekran Görüntüleri](#demo--ekran-görüntüleri)
+* [Teknoloji Yığını](#teknoloji-yığını)
+* [Gereksinimler](#gereksinimler)
+* [Kurulum](#kurulum)
+* [Kullanım](#kullanım)
+* [Yapılandırma](#yapılandırma)
+* [Dizin Yapısı](#dizin-yapısı)
+* [API (opsiyonel)](#api-opsiyonel)
+* [CLI Komutları (opsiyonel)](#cli-komutları-opsiyonel)
+* [Veritabanı / Göçler (opsiyonel)](#veritabanı--göçler-opsiyonel)
+* [Test](#test)
+* [CI/CD](#cicd)
+* [Docker (opsiyonel)](#docker-opsiyonel)
+* [Performans & Ölçeklenebilirlik](#performans--ölçeklenebilirlik)
+* [Yol Haritası](#yol-haritası)
+* [Katkıda Bulunma](#katkıda-bulunma)
+* [Geliştirme Rehberi](#geliştirme-rehberi)
+* [Sürümleme](#sürümleme)
+* [Lisans](#lisans)
+* [İletişim](#iletişim)
+* [Teşekkür](#teşekkür)
 
-<script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
-The dist folder of this package contains different kinds of files:
+---
 
-jspdf.es.*.js: Modern ES2015 module format.
-jspdf.node.*.js: For running in Node. Uses file operations for loading/saving files instead of browser APIs.
-jspdf.umd.*.js: UMD module format. For AMD or script-tag loading.
-polyfills*.js: Required polyfills for older browsers like Internet Explorer. The es variant simply imports all required polyfills from core-js, the umd variant is self-contained.
-Usually it is not necessary to specify the exact file in the import statement. Build tools or Node automatically figure out the right file, so importing "jspdf" is enough.
+## Özellikler
 
-Usage
-Then you're ready to start making your document:
+* [ ] Özellik 1: ...
+* [ ] Özellik 2: ...
+* [ ] Özellik 3: ...
 
-import { jsPDF } from "jspdf";
+## Demo / Ekran Görüntüleri
 
-// Default export is a4 paper, portrait, using millimeters for units
-const doc = new jsPDF();
+<!-- GIF ya da görseller ekleyin. Örn: docs/screenshots/ -->
 
-doc.text("Hello world!", 10, 10);
-doc.save("a4.pdf");
-If you want to change the paper size, orientation, or units, you can do:
+<!-- <img src="docs/screenshots/home.png" alt="Ana Sayfa" width="800"> -->
 
-// Landscape export, 2×4 inches
-const doc = new jsPDF({
-  orientation: "landscape",
-  unit: "in",
-  format: [4, 2]
-});
+Canlı Demo: <!-- https://... -->
 
-doc.text("Hello world!", 1, 1);
-doc.save("two-by-four.pdf");
-Running in Node.js
-const { jsPDF } = require("jspdf"); // will automatically load the node version
+## Teknoloji Yığını
 
-const doc = new jsPDF();
-doc.text("Hello world!", 10, 10);
-doc.save("a4.pdf"); // will save the file in the current working directory
-Other Module Formats
-AMD
-Globals
-Optional dependencies
-Some functions of jsPDF require optional dependencies. E.g. the html method, which depends on html2canvas and, when supplied with a string HTML document, dompurify. JsPDF loads them dynamically when required (using the respective module format, e.g. dynamic imports). Build tools like Webpack will automatically create separate chunks for each of the optional dependencies. If your application does not use any of the optional dependencies, you can prevent Webpack from generating the chunks by defining them as external dependencies:
+* Dil(ler):
+* Çatı/Kütüphaneler:
+* Araçlar:
 
-// webpack.config.js
-module.exports = {
-  // ...
-  externals: {
-    // only define the dependencies you are NOT using as externals!
-    canvg: "canvg",
-    html2canvas: "html2canvas",
-    dompurify: "dompurify"
-  }
-};
-In Vue CLI projects, externals can be defined via the configureWebpack or chainWebpack properties of the vue.config.js file (needs to be created, first, in fresh projects).
+> **Not:** PLC/SCADA projeleri için: TIA Portal versiyonları, WinCC Runtime/HMI panelleri, sürücü/servo modelleri gibi detayları burada belirtin.
 
-In Angular projects, externals can be defined using custom webpack builders.
+## Gereksinimler
 
-In React (create-react-app) projects, externals can be defined by either using react-app-rewired or ejecting.
+* OS: Windows / macOS / Linux
+* Node.js / Python / .NET / Java (uygunsa sürüm numarasıyla)
+* Diğer: Docker, Git, Make, ...
 
-TypeScript/Angular/Webpack/React/etc. Configuration:
-jsPDF can be imported just like any other 3rd party library. This works with all major toolkits and frameworks. jsPDF also offers a typings file for TypeScript projects.
+## Kurulum
 
-import { jsPDF } from "jspdf";
-You can add jsPDF to your meteor-project as follows:
+```bash
+# Depoyu klonla
+git clone https://github.com/<kullanıcı>/<repo>.git
+cd <repo>
 
-meteor add jspdf:core
-Polyfills
-jsPDF requires modern browser APIs in order to function. To use jsPDF in older browsers like Internet Explorer, polyfills are required. You can load all required polyfills as follows:
+# Bağımlılıkları kur (örn. Node.js)
+npm install
+# veya Python
+# pip install -r requirements.txt
+```
 
-import "jspdf/dist/polyfills.es.js";
-Alternatively, you can load the prebundled polyfill file. This is not recommended, since you might end up loading polyfills multiple times. Might still be nifty for small applications or quick POCs.
+## Kullanım
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/polyfills.umd.js"></script>
-Use of Unicode Characters / UTF-8:
-The 14 standard fonts in PDF are limited to the ASCII-codepage. If you want to use UTF-8 you have to integrate a custom font, which provides the needed glyphs. jsPDF supports .ttf-files. So if you want to have for example Chinese text in your pdf, your font has to have the necessary Chinese glyphs. So, check if your font supports the wanted glyphs or else it will show garbled characters instead of the right text.
+```bash
+# Geliştirme sunucusu (örnek)
+npm run dev
 
-To add the font to jsPDF use our fontconverter in /fontconverter/fontconverter.html. The fontconverter will create a js-file with the content of the provided ttf-file as base64 encoded string and additional code for jsPDF. You just have to add this generated js-File to your project. You are then ready to go to use setFont-method in your code and write your UTF-8 encoded text.
+# Üretim
+npm run build && npm start
+```
 
-Alternatively you can just load the content of the *.ttf file as a binary string using fetch or XMLHttpRequest and add the font to the PDF file:
+Komut satırı argümanları / config dosyaları:
 
-const doc = new jsPDF();
+```bash
+app --port 8080 --env .env.local
+```
 
-const myFont = ... // load the *.ttf font file as binary string
+## Yapılandırma
 
-// add the font to jsPDF
-doc.addFileToVFS("MyFont.ttf", myFont);
-doc.addFont("MyFont.ttf", "MyFont", "normal");
-doc.setFont("MyFont");
-Advanced Functionality
-Since the merge with the yWorks fork there are a lot of new features. However, some of them are API breaking, which is why there is an API-switch between two API modes:
+Ortam değişkenleri:
 
-In "compat" API mode, jsPDF has the same API as MrRio's original version, which means full compatibility with plugins. However, some advanced features like transformation matrices and patterns won't work. This is the default mode.
-In "advanced" API mode, jsPDF has the API you're used from the yWorks-fork version. This means the availability of all advanced features like patterns, FormObjects, and transformation matrices.
-You can switch between the two modes by calling
+```
+PORT=3000
+NODE_ENV=development
+API_BASE_URL=https://api.ornek.com
+```
 
-doc.advancedAPI(doc => {
-  // your code
-});
-// or
-doc.compatAPI(doc => {
-  // your code
-});
-JsPDF will automatically switch back to the original API mode after the callback has run.
+Konfigürasyon dosyaları:
 
-Support
-Please check if your question is already handled at Stackoverflow https://stackoverflow.com/questions/tagged/jspdf. Feel free to ask a question there with the tag jspdf.
+* `config/default.json`
+* `.env`, `.env.local`
 
-Feature requests, bug reports, etc. are very welcome as issues. Note that bug reports should follow these guidelines:
+## Dizin Yapısı
 
-A bug should be reported as an mcve
-Make sure code is properly indented and formatted (Use ``` around code blocks)
-Provide a runnable example.
-Try to make sure and show in your issue that the issue is actually related to jspdf and not your framework of choice.
-Contributing
-jsPDF cannot live without help from the community! If you think a feature is missing or you found a bug, please consider if you can spare one or two hours and prepare a pull request. If you're simply interested in this project and want to help, have a look at the open issues, especially those labeled with "bug".
+```text
+<repo>/
+├─ src/
+│  ├─ core/
+│  ├─ modules/
+│  ├─ ui/
+│  ├─ utils/
+│  └─ main.ts
+├─ tests/
+├─ docs/
+├─ .github/workflows/
+├─ Dockerfile
+├─ docker-compose.yml
+├─ package.json / pyproject.toml / pom.xml
+└─ README.md
+```
 
-You can find information about building and testing jsPDF in the contribution guide
+## API (opsiyonel)
 
-Credits
-Big thanks to Daniel Dotsenko from Willow Systems Corporation for making huge contributions to the codebase.
-Thanks to Ajaxian.com for featuring us back in 2009. (Internet Archive Wayback Machine reference)
-Our special thanks to GH Lee (sphilee) for programming the ttf-file-support and providing a large and long sought after feature
-Everyone else that's contributed patches or bug reports. You rock.
-License (MIT)
-Copyright (c) 2010-2021 James Hall, https://github.com/MrRio/jsPDF (c) 2015-2021 yWorks GmbH, https://www.yworks.com/
+**Temel URL:** `https://api.ornek.com/v1`
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+### Kimlik Doğrulama
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+`Authorization: Bearer <token>`
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+### Örnek İstek
 
-About
-Client-side JavaScript PDF generation for everyone.
+```http
+GET /v1/items?page=1&pageSize=20 HTTP/1.1
+Host: api.ornek.com
+Authorization: Bearer <token>
+```
 
-parall.ax/products/jspdf
-Topics
-hacktoberfest
-Resources
- Readme
-License
- MIT license
-Code of conduct
- Code of conduct
-Contributing
- Contributing
-Security policy
- Security policy
- Activity
- Custom properties
-Stars
- 30.5k stars
-Watchers
- 479 watching
-Forks
- 4.7k forks
-Report repository
-Releases 35
-v3.0.1
-Latest
-on Mar 18
-+ 34 releases
-Packages
-No packages published
-Used by 251k
-@FDLG301201
-@ofroot-tech
-@Deodate
-@BryanGonza
-@moldovancsaba
-@you112ef
-@shortlink-org
-@FT-NRZ
-+ 250,645
-Contributors
-195
-@Uzlopak
-@MrRio
-@HackbrettXXX
-@diegocr
-@Flamenco
-@greenkeeper[bot]
-@innerdaze
-@lifof
-@BiggA94
-@pablohess
-@sphilee
-@woolfg
-@bgribaudo
-@jamesbrobb
-+ 181 contributors
-Deployments
-500+
- github-pages 5 months ago
-+ more deployments
-Languages
-JavaScript
-96.5%
- 
-TypeScript
-2.4%
- 
-HTML
-1.1%
-Footer
-© 2025 GitHub, Inc.
-Footer navigation
-Terms
-Privacy
-Security
-Status
-Docs
-Contact
-Manage cookies
-Do not share my personal information
-Repository search results 
+### Örnek Yanıt
+
+```json
+{
+  "data": [{"id": 1, "name": "Ürün"}],
+  "page": 1,
+  "pageSize": 20,
+  "total": 200
+}
+```
+
+## CLI Komutları (opsiyonel)
+
+```bash
+# Örnek
+mycli init --template basic
+mycli build --target prod
+```
+
+## Veritabanı / Göçler (opsiyonel)
+
+* Veritabanı: PostgreSQL / MySQL / SQLite / MSSQL
+* ORM: Prisma / Sequelize / TypeORM / EF Core
+
+```bash
+# Örnek: Prisma
+npx prisma migrate dev --name init
+npx prisma generate
+```
+
+## Test
+
+```bash
+# Birim testleri
+npm test
+
+# Kapsam raporu
+npm run test:coverage
+```
+
+## CI/CD
+
+* GitHub Actions iş akışları `./.github/workflows/` altında.
+* Örnek `node.yml` iş akışı:
+
+```yaml
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm test --if-present
+      - run: npm run build --if-present
+```
+
+## Docker (opsiyonel)
+
+```dockerfile
+# Örnek Dockerfile (Node.js)
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+CMD ["npm", "start"]
+EXPOSE 3000
+```
+
+```bash
+# Çalıştırma
+docker build -t ornek/app:latest .
+docker run -p 3000:3000 --env-file .env ornek/app:latest
+```
+
+## Performans & Ölçeklenebilirlik
+
+* Önbellekleme (Redis)
+* CDN kullanımı
+* Loglama ve izlenebilirlik (OpenTelemetry, Grafana, ELK)
+* Sağlık kontrolleri `/healthz`, hazır olma `/readyz`
+
+## Yol Haritası
+
+* [ ] v1.1: ...
+* [ ] v1.2: ...
+
+## Katkıda Bulunma
+
+1. Fork -> Branch -> PR akışını izleyin.
+2. `CONTRIBUTING.md` ve `CODE_OF_CONDUCT.md` dosyalarını kontrol edin.
+3. PR açıklamasında **amaç**, **değişiklikler** ve **test adımlarını** belirtin.
+
+## Geliştirme Rehberi
+
+* Kod stili: ESLint / Prettier / Black (uygunsa)
+* Commit mesajları: Conventional Commits (`feat:`, `fix:`, `docs:` ...)
+* Branch stratejisi: `main` (production), `dev` (integration), `feature/*`
+
+## Sürümleme
+
+* [Semantic Versioning](https://semver.org/lang/tr/) (MAJOR.MINOR.PATCH)
+* Release notları: `CHANGELOG.md`
+
+## Lisans
+
+Bu proje **MIT** lisansı ile lisanslanmıştır. Ayrıntılar için `LICENSE` dosyasına bakın. <!-- Uygunsa değiştirebilirsiniz -->
+
+## İletişim
+
+* İsim: Ad Soyad
+* E-posta: [email@ornek.com](mailto:email@ornek.com)
+* LinkedIn: [https://www.linkedin.com/in/](https://www.linkedin.com/in/)...
+* Proje Linki: [https://github.com/](https://github.com/)\<kullanıcı>/<repo>
+
+## Teşekkür
+
+* İlham/kütüphaneler: ...
+* Katkıda bulunanlar: ...
+
+---
+
+### Hızlı Başlangıç (Özet)
+
+```bash
+git clone https://github.com/<kullanıcı>/<repo>.git
+cd <repo>
+cp .env.example .env
+npm ci && npm run dev
+```
+
+> **İpucu:** Proje türünü (Node/Python/.NET/PLC-OT vb.), teknoloji sürümlerini ve ekran görüntülerini doldurduğunuzda bu README, GitHub'da profesyonel bir vitrin olacaktır.
