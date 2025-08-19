@@ -1,292 +1,297 @@
-# Proje Adı
+# UDT Scale & Log (TIA Portal / SCL)
 
-<!-- Kısa, bir cümlelik özet: proje ne yapar ve kimin için? -->
-
-Açıklama: Bu proje, ...
+> Analog/real/int bir **giriş değeri**ni tanımlı **min–max aralıklarından** hedef aralığa **ölçekleyip** (scale) sonucu **100 kayıt**lık bir **ring buffer**'da periyodik olarak **loglayan** UDT tabanlı çözüm.
 
 <p align="center">
-  <!-- Varsa bir kapak görseli / logo ekleyin -->
-  <!-- <img src="docs/cover.png" alt="Proje Kapak" width="640" /> -->
+  <!-- <img src="docs/cover.png" alt="Kapak" width="720"/> -->
 </p>
 
 <p align="center">
-  <!-- Arzu edilen rozet örnekleri -->
-  <!-- <a href="#"><img src="https://img.shields.io/badge/versiyon-1.0.0-informational" alt="Version"></a>
-  <a href="#"><img src="https://img.shields.io/badge/lisans-MIT-success" alt="License"></a>
-  <a href="#"><img src="https://img.shields.io/badge/CI-passing-brightgreen" alt="CI"></a> -->
+  <!-- <a href="#"><img src="https://img.shields.io/badge/platform-S7--1200%2F1500-informational"/></a>
+  <a href="#"><img src="https://img.shields.io/badge/language-SCL-blue"/></a>
+  <a href="#"><img src="https://img.shields.io/badge/TIA%20Portal-v17%2B-success"/></a>
+  <a href="#katk%C4%B1da-bulunma"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen"/></a> -->
 </p>
 
 ---
 
-## İçindekiler
+## Özet
 
-* [Özellikler](#özellikler)
-* [Demo / Ekran Görüntüleri](#demo--ekran-görüntüleri)
-* [Teknoloji Yığını](#teknoloji-yığını)
-* [Gereksinimler](#gereksinimler)
-* [Kurulum](#kurulum)
-* [Kullanım](#kullanım)
-* [Yapılandırma](#yapılandırma)
-* [Dizin Yapısı](#dizin-yapısı)
-* [API (opsiyonel)](#api-opsiyonel)
-* [CLI Komutları (opsiyonel)](#cli-komutları-opsiyonel)
-* [Veritabanı / Göçler (opsiyonel)](#veritabanı--göçler-opsiyonel)
-* [Test](#test)
-* [CI/CD](#cicd)
-* [Docker (opsiyonel)](#docker-opsiyonel)
-* [Performans & Ölçeklenebilirlik](#performans--ölçeklenebilirlik)
-* [Yol Haritası](#yol-haritası)
-* [Katkıda Bulunma](#katkıda-bulunma)
-* [Geliştirme Rehberi](#geliştirme-rehberi)
-* [Sürümleme](#sürümleme)
-* [Lisans](#lisans)
-* [İletişim](#iletişim)
-* [Teşekkür](#teşekkür)
+Bu proje; **UDT yapısı** ile çalışan, **kaynak değeri** (INT/DINT/REAL olabilir) **min–max** giriş aralığına göre **normalize eden** ve istenen **hedef aralığa** (ör. 0–100, 4–20 mA → 0–10 bar vb.) **scala** eden bir **FB** içerir. Elde edilen **Out** değeri belirlenen **örnekleme periyoduyla** (örn. 100 ms, 1 s) **100 adet**lik bir **ring buffer**’a kaydedilir.
 
----
+**Neden UDT?** UDT sayesinde, farklı istasyon/sinyaller için yalnızca **hedef DB’de UDT örneği** tanımlayıp aynı FB’yi **IN\_OUT** olarak bu UDT’ye bağlamak yeterlidir. Böylece her sinyal için tekrar tekrar farklı kod yazmadan **kolayca log** tutabilirsiniz.
 
-## Özellikler
+## Öne Çıkanlar
 
-* [ ] Özellik 1: ...
-* [ ] Özellik 2: ...
-* [ ] Özellik 3: ...
+* 🔧 **UDT merkezli tasarım**: Her sinyal için tek tip veri şeması; FB çağrısında yalnızca hedef UDT’yi bağlayın.
+* 📏 **Doğrusal ölçekleme**: `Out = OutMin + (In - InMin) * (OutMax - OutMin) / (InMax - InMin)`
+* 🧰 **Tip esnekliği**: Kaynak INT/DINT değerlerini REAL’e çevrilerek işleme imkânı.
+* 📚 **Ring buffer log (100 kayıt)**: Kayıtlar dairesel olarak tutulur; fazla olduğunda en eski üstüne yazar.
+* 🖥️ **HMI/SCADA dostu**: UDT içindeki buffer, trend/tabloda kolayca görselleştirilebilir.
+* ⚙️ **Hafif ve tekrarlanabilir**: Kayıt için kopyalama/shift yerine **mod tabanlı** indeksleme (performanslı).
 
-## Demo / Ekran Görüntüleri
+## Ekran Görüntüleri / Demo
 
-<!-- GIF ya da görseller ekleyin. Örn: docs/screenshots/ -->
+<!-- İsteğe bağlı görseller ve kısa video/gif -->
 
-<!-- <img src="docs/screenshots/home.png" alt="Ana Sayfa" width="800"> -->
+## Mimari
 
-Canlı Demo: <!-- https://... -->
+```mermaid
+flowchart LR
+  A[Analog/Raw (INT/DINT/REAL)] --> B[FB_ScaleLogger]
+  B --> C[Log Control DB.LogData.Settings]
+  B --> D[Log Control DB.Value & Text]
+  B --> E[Log Control DB.Prescription[1..100]]
+  E --> F[WinCC Table/Trend]
+```
 
-## Teknoloji Yığını
+> Görsellerdeki yapıya uyumlu: **Log Control DB** altında `LogData.Settings` (InMin, InMax, OutMin, OutMax, Log Repeat time), **Warning Control\[1..10]** (Text/MinValue/MaxValue), anlık **Value/Text** ve **Prescription\[1..100]** (Tarih/Saat, Value, Text).
 
-* Dil(ler):
-* Çatı/Kütüphaneler:
-* Araçlar:
+## Teknoloji Yığını & Destek Matrisi
 
-> **Not:** PLC/SCADA projeleri için: TIA Portal versiyonları, WinCC Runtime/HMI panelleri, sürücü/servo modelleri gibi detayları burada belirtin.
+| Bileşen    |           Sürüm/Model | Not                |
+| ---------- | --------------------: | ------------------ |
+| PLC        |     S7‑1200 / S7‑1500 | OB1/OB35 destekli  |
+| TIA Portal |                  v17+ | SCL ile geliştirme |
+| HMI        | WinCC Unified/Comfort | Trend/tablolar     |
 
 ## Gereksinimler
 
-* OS: Windows / macOS / Linux
-* Node.js / Python / .NET / Java (uygunsa sürüm numarasıyla)
-* Diğer: Docker, Git, Make, ...
+* TIA Portal v17+ (önerilir)
+* SCL lisansı
+* (İsteğe bağlı) OB35 periyodik kesmesi
 
 ## Kurulum
 
-```bash
-# Depoyu klonla
-git clone https://github.com/<kullanıcı>/<repo>.git
-cd <repo>
+1. UDT’yi ekleyin (örn. `UDT_ScaleLog`).
+2. FB’yi ekleyin (örn. `FB_ScaleLogger`).
+3. Her sinyal için hedef DB’de `UDT_ScaleLog` alanı oluşturun (örn. `DB_Process`.TankLevel).
+4. OB1/OB35 içinde FB’yi çağırıp **IN\_OUT**’a ilgili UDT alanını bağlayın.
 
-# Bağımlılıkları kur (örn. Node.js)
-npm install
-# veya Python
-# pip install -r requirements.txt
+## Hızlı Başlangıç
+
+```text
+Project
+├─ Types
+│  └─ UDT_ScaleLog
+├─ Program blocks
+│  ├─ FB_ScaleLogger
+│  ├─ OB1 (veya OB35)
+│  └─ DB_ScaleLogger_<instance>
+└─ Data blocks
+   └─ DB_Process (içinde birden fazla UDT alanı)
 ```
 
-## Kullanım
+## DB / UDT Şeması (Projenizdeki Yapıya Göre)
 
-```bash
-# Geliştirme sunucusu (örnek)
-npm run dev
+Aşağıdaki şema, paylaştığınız ekran görüntülerindeki alan adlarıyla birebir hizalanmıştır.
 
-# Üretim
-npm run build && npm start
+```pascal
+// === Settings ===
+TYPE UDT_Settings
+  STRUCT
+    InMin         : REAL;      // örn. 0.0
+    InMax         : REAL;      // örn. 100.0
+    OutMin        : REAL;      // örn. 0.0
+    OutMax        : REAL;      // örn. 100.0
+    LogRepeatTime : TIME := T#1S; // örnekleme periyodu (görselde T#15s)
+  END_STRUCT;
+END_TYPE
+
+// === Warning Bandı (Value1..Value10) ===
+TYPE UDT_WarningBand
+  STRUCT
+    Text     : STRING[32]; // 'Value1', 'Value2' ...
+    MinValue : REAL;       // alt sınır
+    MaxValue : REAL;       // üst sınır
+  END_STRUCT;
+END_TYPE
+
+// === Tek log kaydı ===
+TYPE UDT_Record
+  STRUCT
+    TarihSaat : DTL;       // S7-1500 DTL (yerel saat önerilir)
+    Value     : REAL;      // ölçeklenmiş değer
+    Text      : STRING[32];// eşleşen band yazısı
+  END_STRUCT;
+END_TYPE
+
+// === Ana UDT ===
+TYPE UDT_ScaleLog
+  STRUCT
+    Settings        : UDT_Settings;                    // LogData.Settings
+    WarningControl  : ARRAY[1..10] OF UDT_WarningBand; // Value1..Value10
+
+    // Anlık durum (görsellerde üst bölüm)
+    Value           : REAL;                            // Current scaled value
+    Text            : STRING[32];                      // Current band text
+
+    // 100 adet kayıt (görsellerde Prescription[1..100])
+    Prescription    : ARRAY[1..100] OF UDT_Record;
+
+    // Performans için (kullanırsanız kaydırma yerine ring buffer)
+    Head            : INT := 1;     // bir sonraki yazım 1..100
+    Count           : INT := 0;     // 0..100
+  END_STRUCT;
+END_TYPE
 ```
 
-Komut satırı argümanları / config dosyaları:
+> Notlar:
+>
+> * Görsellerde **Prescription\[1..100]** dolumu *kaydırma* ile yapılmış görünüyor. Performans için **ring buffer** alanlarını (`Head`, `Count`) etkin kullanmayı öneriyoruz.
+> * **Visible in HMI** onaylarının tabloda açık olduğunu gördüm; README’ye HMI alan adları bu varsayımla yazıldı.
 
-```bash
-app --port 8080 --env .env.local
+## FB Arayüzü (Güncel SCL Örneği)
+
+```pascal
+FUNCTION_BLOCK FB_ScaleLogger
+  VAR_IN_OUT
+    U : UDT_ScaleLog;  // Log Control DB içindeki alan
+  END_VAR
+  VAR
+    ton        : TON;
+    spanIn     : REAL;
+    spanOut    : REAL;
+    norm       : REAL;
+    i          : INT;
+    now        : DTL;   // RD_LOC_T ile doldurulacak
+    nextHead   : INT;
+  END_VAR
+BEGIN
+  // --- SCALE ---
+  IF U.Settings.InMax > U.Settings.InMin THEN
+    spanIn  := U.Settings.InMax - U.Settings.InMin;
+    spanOut := U.Settings.OutMax - U.Settings.OutMin;
+    norm := (U.Value - U.Settings.InMin) / spanIn; // U.Value burada InputRaw ise ona göre değiştirin
+    IF norm < 0.0 THEN norm := 0.0; END_IF;
+    IF norm > 1.0 THEN norm := 1.0; END_IF;
+    U.Value := U.Settings.OutMin + norm * spanOut; // Ölçekli değer
+  END_IF;
+
+  // --- BAND / TEXT SEÇİMİ ---
+  U.Text := '';
+  FOR i := 1 TO 10 DO
+    IF (U.Value >= U.WarningControl[i].MinValue) AND (U.Value <= U.WarningControl[i].MaxValue) THEN
+      U.Text := U.WarningControl[i].Text;
+      EXIT;
+    END_IF;
+  END_FOR;
+
+  // --- LOG (RING BUFFER) ---
+  ton(IN := TRUE, PT := U.Settings.LogRepeatTime);
+  IF ton.Q THEN
+    // Zaman damgası
+    RD_LOC_T(RET_VAL := , PDTL := now); // S7-1500; eski CPU'larda READ_CLK kullanın
+
+    // Sıradaki indeksi hesapla
+    nextHead := U.Head;
+    IF nextHead < 1 OR nextHead > 100 THEN nextHead := 1; END_IF;
+
+    U.Prescription[nextHead].TarihSaat := now;
+    U.Prescription[nextHead].Value     := U.Value;
+    U.Prescription[nextHead].Text      := U.Text;
+
+    // İleri sar
+    nextHead := nextHead + 1;
+    IF nextHead > 100 THEN nextHead := 1; END_IF;
+    U.Head := nextHead;
+
+    IF U.Count < 100 THEN
+      U.Count := U.Count + 1;
+    END_IF;
+
+    // TON'u yeniden başlat
+    ton(IN := FALSE);
+    ton(IN := TRUE);
+  END_IF;
+END_FUNCTION_BLOCK
+```
+
+> Ölçümü **kaydırma** yöntemiyle yapmak istiyorsanız, mevcut diziyi 100→1 geriye kaydırıp `Prescription[1]`’e yeni kaydı yazabilirsiniz; ancak **O(N)** kopyalama maliyeti sebebiyle ring buffer daha verimlidir.
+
+## OB Çağrısı (Örnek)
+
+```pascal
+// OB1 veya periyodik OB35 (kısa örnekleme süreleri için OB35 önerilir)
+CALL FB_ScaleLogger, DB_ScaleLogger
+  U := "Log Control DB".LogData; // Veya: DB_Process.Whatever (UDT_ScaleLog)
 ```
 
 ## Yapılandırma
 
-Ortam değişkenleri:
+* `InMin/InMax`: Kaynak sensör aralığı (örn. 0..27648, 4..20 mA eşleniği vb.)
+* `OutMin/OutMax`: Mühendislik birimi aralığı (örn. 0..10 bar, 0..100 %)
+* `SampleTime`: Log periyodu (örn. `T#100ms`, `T#1s`)
+* `Enable`: TRUE olduğunda örnekleme başlar
 
-```
-PORT=3000
-NODE_ENV=development
-API_BASE_URL=https://api.ornek.com
-```
+## HMI/SCADA Entegrasyonu
 
-Konfigürasyon dosyaları:
+**Tablo (görseldeki düzen):**
 
-* `config/default.json`
-* `.env`, `.env.local`
+* **Log No**: Sayfalama/pencere başına satır sıra numarası (ör. 91..100).
+* **Log Time**: `Prescription[i].TarihSaat` (DTL → tarih-saat formatlı).
+* **Log Value**: `Prescription[i].Value`.
+* **Log Text**: `Prescription[i].Text` (band adı).
 
-## Dizin Yapısı
+**Sayfalama Önerisi (10 satır/ekran):**
 
-```text
-<repo>/
-├─ src/
-│  ├─ core/
-│  ├─ modules/
-│  ├─ ui/
-│  ├─ utils/
-│  └─ main.ts
-├─ tests/
-├─ docs/
-├─ .github/workflows/
-├─ Dockerfile
-├─ docker-compose.yml
-├─ package.json / pyproject.toml / pom.xml
-└─ README.md
-```
+* `Page` (INT), `RowsPerPage` = 10.
+* `StartIdx = (Head - 1) - Page*RowsPerPage` (ring buffer için negatifse 100 ekleyin ve 1..100 aralığına mod alın).
+* Her satır için `Idx = 1 + ((StartIdx - r) MOD 100 + 100) MOD 100)` formülüyle döngü kurup en yeni → en eski olacak şekilde gösterin.
 
-## API (opsiyonel)
+**WinCC Ayarları:**
 
-**Temel URL:** `https://api.ornek.com/v1`
+* Görsellerde **Visible in HMI** işaretli; aynı UDT yollarını WinCC tag’lerine bağlayın.
+* DTL gösterimi için sütunda tarih/saat biçimi seçin (örn. `dd.MM.yyyy HH:mm:ss`).
 
-### Kimlik Doğrulama
+## Kalite: Test, Lint, Format
 
-`Authorization: Bearer <token>`
-
-### Örnek İstek
-
-```http
-GET /v1/items?page=1&pageSize=20 HTTP/1.1
-Host: api.ornek.com
-Authorization: Bearer <token>
-```
-
-### Örnek Yanıt
-
-```json
-{
-  "data": [{"id": 1, "name": "Ürün"}],
-  "page": 1,
-  "pageSize": 20,
-  "total": 200
-}
-```
-
-## CLI Komutları (opsiyonel)
-
-```bash
-# Örnek
-mycli init --template basic
-mycli build --target prod
-```
-
-## Veritabanı / Göçler (opsiyonel)
-
-* Veritabanı: PostgreSQL / MySQL / SQLite / MSSQL
-* ORM: Prisma / Sequelize / TypeORM / EF Core
-
-```bash
-# Örnek: Prisma
-npx prisma migrate dev --name init
-npx prisma generate
-```
-
-## Test
-
-```bash
-# Birim testleri
-npm test
-
-# Kapsam raporu
-npm run test:coverage
-```
+* SCL statik analiz (TIA Portal Check & Compile)
+* PLCSIM ile senaryo testleri (ör. farklı In/Out aralıkları, doygunluk testi)
 
 ## CI/CD
 
-* GitHub Actions iş akışları `./.github/workflows/` altında.
-* Örnek `node.yml` iş akışı:
+* (Opsiyonel) TIA Portal proje dosyası versiyon kontrolü (Git LFS)
+* PLCSIM/Unit Test (3rd party) entegrasyonları mümkün
 
-```yaml
-name: CI
-on: [push, pull_request]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - run: npm test --if-present
-      - run: npm run build --if-present
-```
+## Performans & İzlenebilirlik
 
-## Docker (opsiyonel)
+* **Ring buffer** yaklaşımı: O(N) kopyalama/shift yok, **O(1)** yazım
+* Örnekleme periyodu çok kısa ise OB35 kullanımı önerilir
 
-```dockerfile
-# Örnek Dockerfile (Node.js)
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-CMD ["npm", "start"]
-EXPOSE 3000
-```
+## SSS / Sorun Giderme
 
-```bash
-# Çalıştırma
-docker build -t ornek/app:latest .
-docker run -p 3000:3000 --env-file .env ornek/app:latest
-```
+**Out değeri doygunda** → `InMin/InMax` ile gerçek sensör aralığı (örn. 0..27648) ve mühendislik birimi `OutMin/OutMax` uyumunu kontrol edin.
 
-## Performans & Ölçeklenebilirlik
+**Log ilerlemiyor** → `Log Repeat time` (görselde T#15s) ve OB çağrı periyodunu doğrulayın; TON tetikleniyor mu bakın.
 
-* Önbellekleme (Redis)
-* CDN kullanımı
-* Loglama ve izlenebilirlik (OpenTelemetry, Grafana, ELK)
-* Sağlık kontrolleri `/healthz`, hazır olma `/readyz`
+**Text yanlış** → WarningControl bantlarının **çakışmadığından** emin olun; \[i].MinValue ≤ \[i].MaxValue ve boşluk kalmamalı.
 
-## Yol Haritası
+**Kaydırma yavaş** → Ring buffer’a geçin (`Head/Count`), O(1) yazım.
 
-* [ ] v1.1: ...
-* [ ] v1.2: ...
+## Güvenlik
+
+* Proses kritik eşikler için ayrıca **alarm** ve **limit** izleme önerilir (ayrı FB/FC).
 
 ## Katkıda Bulunma
 
-1. Fork -> Branch -> PR akışını izleyin.
-2. `CONTRIBUTING.md` ve `CODE_OF_CONDUCT.md` dosyalarını kontrol edin.
-3. PR açıklamasında **amaç**, **değişiklikler** ve **test adımlarını** belirtin.
+* PR’larda test senaryosu ve UDT alan değişikliklerini açıkça belgeleyin.
 
-## Geliştirme Rehberi
+## Sürümleme & Yayınlama
 
-* Kod stili: ESLint / Prettier / Black (uygunsa)
-* Commit mesajları: Conventional Commits (`feat:`, `fix:`, `docs:` ...)
-* Branch stratejisi: `main` (production), `dev` (integration), `feature/*`
-
-## Sürümleme
-
-* [Semantic Versioning](https://semver.org/lang/tr/) (MAJOR.MINOR.PATCH)
-* Release notları: `CHANGELOG.md`
+* SemVer, `CHANGELOG.md`
 
 ## Lisans
 
-Bu proje **MIT** lisansı ile lisanslanmıştır. Ayrıntılar için `LICENSE` dosyasına bakın. <!-- Uygunsa değiştirebilirsiniz -->
+Bu proje **MIT** lisansı ile lisanslanmıştır.
 
 ## İletişim
 
 * İsim: Ad Soyad
-* E-posta: [email@ornek.com](mailto:email@ornek.com)
-* LinkedIn: [https://www.linkedin.com/in/](https://www.linkedin.com/in/)...
-* Proje Linki: [https://github.com/](https://github.com/)\<kullanıcı>/<repo>
+* E‑posta: email@örnek.com
+* Proje: [https://github.com/](https://github.com/)\<kullanıcı>/<repo>
 
 ## Teşekkür
 
 * İlham/kütüphaneler: ...
 * Katkıda bulunanlar: ...
-
----
-
-### Hızlı Başlangıç (Özet)
-
-```bash
-git clone https://github.com/<kullanıcı>/<repo>.git
-cd <repo>
-cp .env.example .env
-npm ci && npm run dev
-```
-
-> **İpucu:** Proje türünü (Node/Python/.NET/PLC-OT vb.), teknoloji sürümlerini ve ekran görüntülerini doldurduğunuzda bu README, GitHub'da profesyonel bir vitrin olacaktır.
